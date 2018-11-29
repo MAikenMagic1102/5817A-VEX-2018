@@ -80,15 +80,14 @@ double distanceToObjectInches(pros::vision_object_s_t object, double height_mm) 
   double focal_length_mm = 3.814;
   double image_height_pixels = 400;
   // https://photo.stackexchange.com/questions/12434/how-do-i-calculate-the-distance-of-an-object-in-a-photo
-  double sensor_height_mm = 5.465; // guessed pls change if vex stops being dumb
+  double sensor_height_mm = 5.465; // guessed pls change if vex actually tells us the value
   double distance_mm = 0;
   distance_mm = (focal_length_mm * height_mm * image_height_pixels) / (object.height * sensor_height_mm);
   return cmtoinch(distance_mm / 10); // mm to cm then to inches
 }
 
 double distanceToBiggestFlagInches(void) {
-  pros::vision_object_s_t object = vision.get_by_size(0);
-  //vision.get_by_sig(0, 1);
+  pros::vision_object_s_t object = vision.get_by_sig(0, 1);
   //vision.get_by_sig(0, FLAG_BLUE_SIG); // We should use color codes instead of simple sigs
   double height_mm = 138;
   double ret_val = 0.0;
