@@ -9,6 +9,8 @@ public:
 
   void return_home();
 
+  void auto_lift();
+
   void liftup();
 
   void liftdown();

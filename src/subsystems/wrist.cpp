@@ -1,7 +1,7 @@
 #include "main.h"
 #include "wrist.h"
 
-int wrist_port = 4;
+int wrist_port = 5;
 pros::Motor wrist (wrist_port, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_ENCODER_DEGREES);
 
 Wrist::Wrist(){}

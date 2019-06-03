@@ -25,7 +25,7 @@ void initialize() {
 	pros::lcd::register_btn1_cb(on_center_button);
 	init();
 
-	pros::delay(2);
+	pros::delay(100);
 }
 
 /**

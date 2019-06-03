@@ -10,6 +10,11 @@ float drive_math();
 void driver_control();
 
 void automode();
+void redTop();
+void redBot();
+void blueTop();
+void blueBot();
+void doNothing();
 
 // Helper Functions
 double radtodeg(double rad);

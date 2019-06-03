@@ -1,5 +1,5 @@
 #include "main.h"
-#include "Intake.h"
+#include "intake.h"
 
 
 int intake_port = 8;
@@ -9,11 +9,11 @@ pros::Motor intake (intake_port, pros::E_MOTOR_GEARSET_18, false, pros::E_MOTOR_
   Intake::Intake(){}
 
   void Intake::intake_fwd(){
-    intake.move_velocity(200);
+    intake.move_velocity(180);
   }
 
   void Intake::intake_rvs(){
-    intake.move_velocity(-200);
+    intake.move_velocity(-180);
   }
 
   void Intake::intake_stop(){

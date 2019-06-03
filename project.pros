@@ -1,7 +1,7 @@
 {
     "py/object": "pros.conductor.project.Project",
     "py/state": {
-        "project_name": "5817B-VEX",
+        "project_name": "5817A-VEX",
         "target": "v5",
         "templates": {
             "kernel": {

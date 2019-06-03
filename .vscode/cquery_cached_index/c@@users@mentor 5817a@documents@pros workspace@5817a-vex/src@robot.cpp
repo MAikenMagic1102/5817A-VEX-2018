@@ -15,6 +15,16 @@ bool  flag_select = false;
 
 int flag = 1;
 
+// This is the chosing process for autonomous Thomas !!!
+
+
+
+
+
+
+
+
+
 //Motor Port, Motor Gearset, Is motor reversed?, What type of movement? Rotations?/Counts?/Degrees?
 int leftdrive_port = 1;
 int leftdrive2_port = 9;
@@ -28,9 +38,8 @@ Wrist wrist_;
 Lift lift_;
 Shooter shooter_;
 
-
 pros::vision_signature_s_t BLUEFLAG;
-pros::vision_signature_s_t REDFLAG;
+pros::vision_signature_s_t GREENFLAG;
 
 auto drive = ChassisControllerFactory::create(
   {leftdrive_port, leftdrive2_port}, {rightdrive_port, rightdrive2_port},
@@ -119,43 +128,45 @@ void alignWithObject(int sig, double rpm) {
 
 
 void init(){
-
   master.clear();
   wrist_.set_home();
-  lift_.init_Lift();
   lift_.set_home();
+  vision.clear_led();
+  vision.set_auto_white_balance(true);
 }
 
 void set_vision_sigs(){
-
-      REDFLAG.id = 1;
-      REDFLAG.range = 3;
-      REDFLAG.u_min = 4681;
-      REDFLAG.u_max = 7621;
-      REDFLAG.u_mean = 6151;
-      REDFLAG.v_min = -1117;
-      REDFLAG.v_max = -429;
-      REDFLAG.v_mean = -773;
-      REDFLAG.rgb = 7160124;
-      REDFLAG.type = 0;
-      vision.set_signature(1, &REDFLAG);
-
-      BLUEFLAG.id = 2;
-      BLUEFLAG.range = 3;
-      BLUEFLAG.u_min = -3085;
-      BLUEFLAG.u_max = 1707;
-      BLUEFLAG.u_mean = -2396;
-      BLUEFLAG.v_min = 7691;
-      BLUEFLAG.v_max = 11253;
-      BLUEFLAG.v_mean = 9472;
-      BLUEFLAG.rgb = 1120307;
-      BLUEFLAG.type = 0;
-      vision.set_signature(2, &BLUEFLAG);
+//  data":{"brightness":23,"signatures":[{"name":"1","parameters":{"uMin":-4001,"uMax":-3353,"uMean":-3677,"vMin":-5569,"vMax":-4759,"vMean":-5164,"rgb":5797964.6,"type":0,"name":"1"
+      //
+       GREENFLAG.id = 1;
+       GREENFLAG.range = 6.3;
+       GREENFLAG.u_min = -4001;
+       GREENFLAG.u_max = -3353;
+       GREENFLAG.u_mean = -3677;
+       GREENFLAG.v_min = -5569;
+       GREENFLAG.v_max = -4759;
+       GREENFLAG.v_mean = -5164;
+       GREENFLAG.rgb = 5797964;
+       GREENFLAG.type = 0;
+       vision.set_signature(1, &GREENFLAG);
+      //
+      // BLUEFLAG.id = 2;
+      // BLUEFLAG.range = 3;
+      // BLUEFLAG.u_min = -3085;
+      // BLUEFLAG.u_max = 1707;
+      // BLUEFLAG.u_mean = -2396;
+      // BLUEFLAG.v_min = 7691;
+      // BLUEFLAG.v_max = 11253;
+      // BLUEFLAG.v_mean = 9472;
+      // BLUEFLAG.rgb = 1120307;
+      // BLUEFLAG.type = 0;
+      // vision.set_signature(2, &BLUEFLAG);
 }
 
 void driver_control(){
 
 
+  pros::vision_object_s_t object = vision.get_by_sig(0, 1);
 
   //Drivetrain Flip Toggle Logic
   if(master.get_digital_new_press(DIGITAL_LEFT)){
@@ -163,8 +174,8 @@ void driver_control(){
   }
   pros::lcd::print(3, "DRIVE FLIPPED?: %d", flip_drive);
   pros::lcd::print(4, "MASTER LEFT STICK: %d", drive_math(controller.getAnalog(ControllerAnalog::leftY)));
-  pros::lcd::print(5, "lift CURRENT DRAW: %d", 0);
-  pros::lcd::print(6, "Distance to flag INCHES: ", distanceToBiggestFlagInches());
+  //pros::lcd::print(5, "lift CURRENT DRAW: %d", 0);
+  pros::lcd::print(6, "Flip Cap: %d", flip_cap);
 
   //Drivetrain Flip Check and Math
   if(flip_drive){
@@ -237,14 +248,142 @@ void driver_control(){
   if(master.get_digital_new_press(DIGITAL_Y)){
     flag_select = !flag_select;
   }
-
+//hit that yeet
   if(flag_select){
     flag = 2; //Middle flag
   }else{
     flag = 1; //high flag
   }
 }
+//////////////////////////////////////////////////////////////////////////////
+//                             Autonomous'                                  //
+//                             selections                                   //
+//////////////////////////////////////////////////////////////////////////////
+void redTop(){
+  //  This is the code for Top Red Side Autonomous -Alex
 
-void automode(){
+lift_.auto_lift();
+lift_.return_home();
+
+
+intake_.intake_rvs(); //Start intake
+
+drive.moveDistance(-23_in);
+
+lift_.liftdown();
+
+shooter_.fire();
+pros::delay(3000); // Hit Mid Flag (hopefully)
+shooter_.stop();
+
+drive.turnAngle(-20_deg); // Turn to hit bottom flag
+
+drive.moveDistance(-19_in); // Drive to hit bottom flag
+drive.waitUntilSettled(); // Gay
+
+
+
+drive.moveDistance(44_in); // Go to beg
+drive.turnAngle(93_deg); // Turn to hit mid cap
+
+
+drive.moveDistance(-35_in); // Try to hit cap
+
+drive.moveDistance(10_in); // Crap go back
+intake_.intake_stop(); // Stop intake cause Thomas
+drive.turnAngle(94_deg); // Turn to face platform
+
+
+
+drive.moveDistance(-30_in); // CLIMB!!!!!!!!!!
 
 }
+void blueTop(){
+  lift_.auto_lift();
+  lift_.return_home();
+
+
+  intake_.intake_rvs(); //Start intake
+
+  drive.moveDistance(-23_in); // Go to hit that flag yo
+
+  lift_.liftdown(); // Put lift down cause Thomas
+
+  shooter_.fire();
+  pros::delay(3000); // FIRE!!!
+  shooter_.stop();
+
+
+  drive.turnAngle(20_deg); // Turn to hit bottom flag
+
+  drive.moveDistance(-19_in); // Drive to hit bottom flag
+  drive.waitUntilSettled(); // Gay
+
+
+
+  drive.moveDistance(44_in); // Return to Origin
+  drive.turnAngle(-96_deg); // turn to mid cap
+
+
+  drive.moveDistance(-32_in); // Try to hit that cap yo
+
+  drive.moveDistance(10_in); // Oh crap move back
+  intake_.intake_stop();
+  drive.turnAngle(-94_deg); // Turn to platform
+
+  drive.moveDistance(-30_in); // CLIMB!
+
+}
+void doNothing(){
+
+// Wow wonder what this does -_-
+
+ drive.moveDistance(1_in);
+ drive.waitUntilSettled();
+}
+void blueBot(){
+
+intake_.intake_rvs();
+
+drive.moveDistance(-37_in); // That cap be looking like a fine treet
+drive.waitUntilSettled(); // Gay
+
+drive.moveDistance(5_in); // Obtain ball
+drive.waitUntilSettled();
+
+intake_.intake_stop(); // "STOP" -Thomas
+
+drive.turnAngle(90_deg); // Turn to Big mountain
+
+drive.moveDistance(-30_in); // CLIMBBBB
+
+}
+void redBot(){
+
+  intake_.intake_rvs(); // Start that intake boi
+
+  drive.moveDistance(-37_in); // Obtain the ballllllllllllllllllllll
+  drive.waitUntilSettled(); // Gay
+
+  drive.moveDistance(5_in); // Go back
+  drive.waitUntilSettled(); // Gay
+
+  intake_.intake_stop(); // Thomas
+
+  drive.turnAngle(-90_deg); // Turn to big platform
+
+  drive.moveDistance(-30_in); // Climb!!!!!!!!!!
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+//                      -FIN
